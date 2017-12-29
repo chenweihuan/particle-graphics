@@ -1,0 +1,128 @@
+
+<!doctype html>
+<html lang="zh">
+<head>
+     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,shrink-to-fit=no">
+    <title>canvas学习</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <style type="text/css">
+		body{background-color: #0c1328;position: absolute;left: 0;top: 0;right: 0;bottom: 0;}
+    </style>
+
+</head>
+<body>
+<canvas id="myCanvas">您的浏览器不支持Canvas。</canvas>
+<script type="text/javascript">
+(function(){
+	var canvas = {},
+		image = {};
+	var particles = [];
+	//获取canvas元素
+	canvas.obj = document.getElementById('myCanvas');
+
+	if(canvas.obj.getContext) {
+
+		//获取渲染上下文
+		canvas.ctx = canvas.obj.getContext('2d');
+
+		//设置画布大小为屏幕宽高
+		canvas.w = canvas.obj.width = document.body.clientWidth;
+		canvas.h = canvas.obj.height = document.body.clientHeight;
+
+		//新建一个image对象
+		var img = new Image();
+
+		//图像加载完后
+		img.onload = function() {
+			//把图像信息保存在image里面
+			image.obj = img;
+			image.w = img.width;
+			image.h = img.height;
+			image.x = parseInt(canvas.w/2 - image.w/2);
+			image.y = 200;
+
+			//把图像绘制到画布坐标为(100,200)的地方
+			canvas.ctx.drawImage(image.obj,image.x,image.y,image.w,image.h);
+
+			image.imageData = canvas.ctx.getImageData(image.x,image.y,image.w,image.h);
+
+			//计算出符合要求的像素
+			calculate();
+
+			//计算后绘到画布上
+			draw();
+		};
+
+		//设置image的source
+		img.src = '3.png';
+	}
+
+
+	//计算并保存坐标
+	function calculate() {
+		var len = image.imageData.length;
+		//只保存100行，100列的像素值
+		var cols = 150,//列
+			rows = 150;//行
+		//设成150行，100列后每个单元的宽高
+		var s_width = parseInt(image.w/cols),   
+			s_height = parseInt(image.h/rows);
+		var pos = 0; //数组中的位置
+		// var par_x, par_y;  //粒子的x,y坐标
+		var data = image.imageData.data;  //像素值数组
+        console.log(image.imageData)
+		for(var i = 0; i < cols; i++) {
+			for(var j = 0; j < rows; j++) {
+				//计算(i,j)在数组中的R的坐标值
+				pos = (j*s_height*image.w + i*s_width)*4;//相当于如果照片的width=1000，只保存100行像素，那么数组应该是10个像素为一个数组
+				//判断像素透明度值是否符合要求
+				if(data[pos+3] > 100){
+					var particle = {
+						//x,y值都随机一下，在自己划分的区域内随机变动20一下像素
+						x: image.x + i*s_width + Math.random()*20,
+						y: image.y + j*s_height + Math.random()*20	
+					}
+					// 根据图像不同的色值来设定粒子色值
+					if(data[pos+1] < 175 && data[pos+2] < 10) {
+						particle.fillStyle = '#ffa900';
+					} else if(data[pos+1] < 75 && data[pos+1] > 50) {
+						particle.fillStyle = '#ff4085';
+					} else if(data[pos+1] < 220 && data[pos+1] > 190) {
+						particle.fillStyle = '#00cfff';
+					} else if(data[pos+1] < 195 && data[pos+1] > 175) {
+						particle.fillStyle = '#9abc1c';
+					}
+					//符合要求的粒子保存到数组里
+					particles.push(particle);
+				}
+			}
+		}
+	}
+
+	//绘图案
+	function draw() {
+		//清空画布					
+		canvas.ctx.clearRect(0,0,canvas.w,canvas.h);
+
+		var len = particles.length;
+		var curr_particle = null;
+
+		for(var i = 0; i < len; i++) {
+
+			curr_particle = particles[i];
+
+			//设置填充颜色
+			canvas.ctx.fillStyle = curr_particle.fillStyle;
+			//绘粒子到画布上
+			canvas.ctx.fillRect(curr_particle.x,curr_particle.y,1,1);
+		}
+	}
+}())
+
+</script>
+
+</body>
+</html>
+

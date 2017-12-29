@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://threejs.org/build/three.js"></script>    
+    <script type="text/javascript" src="stats.min.js"></script>
+    <!-- <script type="text/javascript" src="dat.gui.min.js"></script> -->
+    <script src="./zhuan.js"></script>
+    <title>用sprite建立粒子</title>
+    <style>
+        body {
+            /* set margin to 0 and overflow to hidden, to go fullscreen */
+            margin: 0;
+            overflow: hidden;
+            background-color: #fff;
+        }
+		canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+        <div id="Stats-output">
+        </div>
+	</body>
+</html>
+<script>
+        
+        let positionStart = [];//初始位置数组
+        let spriteList = [],finPosition;//最终位置数组
+
+        let num = 1;//已经绘了多少帧
+
+        function init(){
+
+            var stats = initStats(); //左上角的性能插件
+
+            let ww = window.innerWidth;
+            let wh = window.innerHeight;//屏幕的宽高度
+
+            // 场景
+            let scene = new THREE.Scene();
+            // 相机
+            let camera = new THREE.PerspectiveCamera( 45, ww/wh, 0.1, 1000 );
+            camera.position.z = 150;
+            // 渲染器
+            let renderer = new THREE.WebGLRenderer();
+            renderer.setSize( ww, wh );
+            renderer.setClearColor(new THREE.Color(0xFFF, 1.0));
+            document.body.appendChild( renderer.domElement );
+
+            ////监听鼠标、键盘事件，旋转图形
+            let controls = new THREE.OrbitControls(camera);
+
+            //规则的粒子化图形 sprite
+            let spriteMap = new THREE.TextureLoader().load( './img/sprite.png' );
+            let material = new THREE.SpriteMaterial({
+                map: spriteMap,
+                fog:true,
+                lights:true,
+                rotation:10
+            });
+
+            creatParticle();
+            animate();
+            window.addEventListener("resize", onWindowResize);
+
+                // 运动函数
+                function animate() {
+                    stats.update();//左上角的性能插件
+
+                    requestAnimationFrame( animate );
+
+                    if(num !== 30){//1秒绘60帧，30帧完成，30帧之后不再需要移动粒子
+                        for(let i = 0;i < positionStart.length; i++){
+                            // 粒子的速度
+                            positionStart[i].x += (spriteList[i].x - positionStart[i].x)/30;
+                            positionStart[i].y += (spriteList[i].y - positionStart[i].y)/30;
+                            positionStart[i].z += (spriteList[i].z - positionStart[i].z)/30;
+                        }
+                    }
+                    num ++;
+                    controls.update();
+                    renderer.render(scene, camera);
+                };
+
+                // 创建粒子
+                function creatParticle(){
+                    let plus_or_minus;//0代表负方向，1代表正方向
+                    let particle = 5;//立方体的长宽高
+                    let dis_particle = 5;//粒子之间的距离
+                    let random_num = 100;//粒子随机的最大距离
+                        //新建5*5*5个粒子
+                        for (let x = -particle; x < particle; x++) {
+                            for (let y = -particle; y < particle; y++) {
+                                for(let z = -particle; z < particle; z++){
+                                    //初始化的时候随机分配粒子，plus_or_minus代表往哪一个方向
+                                    plus_or_minus = Math.floor(Math.random()*2);
+
+                                    let sprite = new THREE.Sprite(material);
+                                    finPosition = {   
+                                            x:x * dis_particle,
+                                            y:y * dis_particle,
+                                            z:z * dis_particle
+                                            };
+                                    plus_or_minus == 0?sprite.position.set(-Math.random()*random_num, -Math.random()*random_num, -Math.random()*random_num):sprite.position.set(Math.random()*random_num, Math.random()*random_num, Math.random()*random_num); 
+                                    positionStart.push(sprite.position); //添加初始位置数组                                    
+                                    spriteList.push(finPosition);//添加至最终位置数组
+                                    scene.add(sprite);
+                                }
+                            }
+                        }
+
+                    // point实现球体粒子化,动画效果和立方体一样。
+                    // let geometry = new THREE.SphereGeometry( 30, 50, 50 ,0 ,Math.PI * 3,0 ,Math.PI * 3);
+                    // let spriteMap = new THREE.TextureLoader().load( './img/sprite.png' );
+                    // let material = new THREE.PointsMaterial( { 
+                    //     map:spriteMap
+                    // } ) ;
+                    // let mesh = new THREE.Points( geometry, material );
+                    // //scene.add(mesh);
+                    
+                    // for (let x = 0; x < geometry.vertices.length; x++) {
+                    //     let sprite = new THREE.Sprite(material);
+                    //     sprite.position.set(geometry.vertices[x].x, geometry.vertices[x].y, geometry.vertices[x].z);
+                    //     scene.add(sprite);
+                    // }
+
+                }
+
+                // 缩小窗口的时候，自动适应，保证正常显示图形
+                function onWindowResize() {
+                    ww = window.innerWidth;
+                    wh = window.innerHeight;
+
+                    camera.aspect = ww / wh;
+                    camera.updateProjectionMatrix();
+
+                    renderer.setSize(ww, wh);
+                }
+
+                //左上角的性能插件
+                function initStats() {
+        
+                    var stats = new Stats();
+                    stats.setMode(0); // 0: fps, 1: ms
+        
+                    // Align top-left
+                    stats.domElement.style.position = 'absolute';
+                    stats.domElement.style.left = '0px';
+                    stats.domElement.style.top = '0px';
+        
+                    document.getElementById("Stats-output").appendChild(stats.domElement);
+        
+                    return stats;
+                }
+        }
+
+
+        init();
+
+    </script>
