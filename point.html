@@ -92,25 +92,40 @@
                     let dis_particle = 5;//粒子之间的距离
                     let random_num = 100;//粒子随机的最大距离
                         //新建5*5*5个粒子
-                        for (let x = -particle; x < particle; x++) {
-                            for (let y = -particle; y < particle; y++) {
-                                for(let z = -particle; z < particle; z++){
-                                    //初始化的时候随机分配粒子，plus_or_minus代表往哪一个方向
-                                    plus_or_minus = Math.floor(Math.random()*2);
+                        // for (let x = -particle; x < particle; x++) {
+                        //     for (let y = -particle; y < particle; y++) {
+                        //         for(let z = -particle; z < particle; z++){
+                        //             //初始化的时候随机分配粒子，plus_or_minus代表往哪一个方向
+                        //             plus_or_minus = Math.floor(Math.random()*2);
 
-                                    let sprite = new THREE.Sprite(material);
-                                    finPosition = {   
-                                            x:x * dis_particle,
-                                            y:y * dis_particle,
-                                            z:z * dis_particle
-                                            };
-                                    plus_or_minus == 0?sprite.position.set(-Math.random()*random_num, -Math.random()*random_num, -Math.random()*random_num):sprite.position.set(Math.random()*random_num, Math.random()*random_num, Math.random()*random_num); 
-                                    positionStart.push(sprite.position); //添加初始位置数组                                    
-                                    spriteList.push(finPosition);//添加至最终位置数组
-                                    scene.add(sprite);
-                                }
-                            }
-                        }
+                        //             let sprite = new THREE.Sprite(material);
+                        //             finPosition = {   
+                        //                     x:x * dis_particle,
+                        //                     y:y * dis_particle,
+                        //                     z:z * dis_particle
+                        //                     };
+                        //             plus_or_minus == 0?sprite.position.set(-Math.random()*random_num, -Math.random()*random_num, -Math.random()*random_num):sprite.position.set(Math.random()*random_num, Math.random()*random_num, Math.random()*random_num); 
+                        //             positionStart.push(sprite.position); //添加初始位置数组                                    
+                        //             spriteList.push(finPosition);//添加至最终位置数组
+                        //             scene.add(sprite);
+                        //         }
+                        //     }
+                        // }
+
+                    // point实现球体粒子化,动画效果和立方体一样。
+                    let geometry = new THREE.SphereGeometry( 30, 50, 50 ,0 ,Math.PI * 3,0 ,Math.PI * 3);
+                    let spriteMap = new THREE.TextureLoader().load( './img/sprite.png' );
+                    let material = new THREE.PointsMaterial( { 
+                        map:spriteMap
+                    } ) ;
+                    let mesh = new THREE.Points( geometry, material );
+                    scene.add(mesh);
+                    
+                    for (let x = 0; x < geometry.vertices.length; x++) {
+                        let sprite = new THREE.Sprite(material);
+                        sprite.position.set(geometry.vertices[x].x, geometry.vertices[x].y, geometry.vertices[x].z);
+                        scene.add(sprite);
+                    }
 
                 }
 
