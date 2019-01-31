@@ -13,9 +13,9 @@ getImageData(image.x,image.y,image.w,image.h);
 //image.h 将要复制的矩形区域的高度。
 ```
 这样即可得到canvas指定区域的RGBA值。
-![getImageData](./docs/getImageData.png)
-其中，width、height是读取图像像素信息完整区域的宽度和高度，data是一个Uint8ClampedArray类型的一维数组，包含了整个图片区域里每个像素点的RGBA的整型数据。这里必须要理解这个数组所保存像素信息的排序规则，请看下图描述的data数组：
-![data](./docs/data.png)
+![getImageData](./docs/getImageData.png)<br>
+其中，width、height是读取图像像素信息完整区域的宽度和高度，data是一个Uint8ClampedArray类型的一维数组，包含了整个图片区域里每个像素点的RGBA的整型数据。这里必须要理解这个数组所保存像素信息的排序规则，请看下图描述的data数组：<br>
+![data](./docs/data.png)<br>
 图像中第i行第j列的R、G、B、A像素信息就是
 ```
 Rij = [(j-1)*imageData.width + (i-1)]*4 
@@ -71,7 +71,7 @@ function calculate() {
 查看官网，一番研究之后，利用three生成粒子化图形主要分为两种方法：Sprite和Points。
 
 ### Sprite效果图
-![Sprite](./docs/Sprite.png)
+![Sprite](./docs/Sprite.png)<br>
 看看threejs官网对sprite的解释：A sprite is a plane that always faces towards the camera, generally with a partially transparent texture applied.  
 > 原理：生成一个5*5*5的立方体粒子化图形，只需要在特定位置生成5*5*5=250个粒子即可。然后给这250个粒子添加动画效果。
 ```
@@ -105,7 +105,7 @@ function creatParticle(){
 ```
 
 ### Points效果图
-![Points](./docs/Points.png)
+![Points](./docs/Points.png)<br>
 看看threejs官网对Points的解释：A class for displaying points. The points are rendered by the WebGLRenderer using gl.POINTS.
 ```
 let geometry = new THREE.SphereGeometry( 30, 50, 50 ,0 ,Math.PI * 3,0 ,Math.PI * 3);
