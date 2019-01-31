@@ -133,3 +133,12 @@ for (let x = 0; x < geometry.vertices.length; x++) {
     scene.add(sprite);
 }
 ```
+## 三：demo的打开方式
+Node.js has a simple HTTP server package. To install:
+```
+npm install http-server -g
+```
+To run (from your local directory):
+```
+http-server . -p 8000
+```
